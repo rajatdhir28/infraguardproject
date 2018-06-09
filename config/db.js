@@ -21,10 +21,10 @@ module.exports = {
 
 openCon : function(con){
 con = mysql.createConnection({
-host: "localhost",
-user: "root",
-password: "",
-database: "infradb"
+host: "ig.c7brhjbqe7ny.ap-south-1.rds.amazonaws.com",
+user: "igroot",
+password: "RightCloud123$",
+database: "ignew"
 });
 con.connect(function(err){
 if(err){

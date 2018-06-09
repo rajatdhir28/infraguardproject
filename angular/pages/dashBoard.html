@@ -17,6 +17,9 @@
 
     <!-- Angular Datepicker -->
     <link rel="stylesheet" type="text/css" href="css/angular-datepicker.css" />
+	
+	<!-- Custom css -->
+    <link rel="stylesheet" type="text/css" href="css/jquery-cron-quartz.css" />
     
 </head>
 <body>
@@ -1116,9 +1119,10 @@
     
       <div class="modal fade" ng-class="{true: 'fade1'}[visible_cronjob]">
           <div class="modal-dialog">
+			<form class="reset-form">
             <div class="modal-content">
               <div class="modal-header">
-                <button type="button" class="close" ng-click="close('cronjob_cancel')" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <button type="button" class="close cleardata" ng-click="close('cronjob_cancel')" data-dismiss="modal" aria-hidden="true">&times;</button>
                 <h2 class="modal-title">Create Cron Job</h2>
               </div>
               <div class="modal-body">
@@ -1133,36 +1137,56 @@
                         <input type="text" class="form-control" ng-model="jobCommand" name="jobCommand" placeholder="Enter Cron Job Command">
                         <p class="colorRed" ng-show="errCommand">Job Command must be filled</p>
                     </div>
-                    <div class="form-group" style='margin-bottom: -25px;'>
+					
+					<div class="form-group" style='margin-bottom: -25px;'>
+					
+						<span class="headingLevel">Frequency</span>
+						<p>							
+							<div id="cronbuilder" class="cron-builder"></div>
+							<div>
+								<p><input type="text" readonly ng-model="cronvalue" class="cronresult" name="cronvalue" />
+								</p>
+							</div>					
+						</p>
+					</div>
+					
+                    <div class="form-group" style='margin-bottom: -25px; display:none;'>
                         <span class="headingLevel">Frequency</span>
                         <p>
-                            <input type="text" ng-model="minute" name="minute" style="border: 1px solid #ccc;width: 85px;text-align: center;margin-right:30px;" ng-init="minute = '*'">
-                            <input type="text" ng-model="hour" name="hour" style="border: 1px solid #ccc;width: 85px;text-align: center;margin-right:30px;" ng-init="hour = '*'">
-                            <input type="text" ng-model="day_of_month" name="day_of_month" style="border: 1px solid #ccc;width: 85px;text-align: center;margin-right:30px;" ng-init="day_of_month = '*'">
-                            <input type="text" ng-model="month" name="month" style="border: 1px solid #ccc;width: 85px;text-align: center;margin-right:30px;" ng-init="month = '*'">
-                            <input type="text" ng-model="day_of_week" name="day_of_week" style="border: 1px solid #ccc;width: 85px;text-align: center;" ng-init="day_of_week = '*'">
+							<input type="text" ng-model="seconds" name="seconds" class="seconds" style="border: 1px solid #ccc;width: 85px;text-align: center;margin-right:30px;" ng-init="seconds = '*'">
+                            <input type="text" ng-model="minute" name="minute" class="minute" style="border: 1px solid #ccc;width: 85px;text-align: center;margin-right:30px;" ng-init="minute = '*'">
+                            <input type="text" ng-model="hour" name="hour" class="hour" style="border: 1px solid #ccc;width: 85px;text-align: center;margin-right:30px;" ng-init="hour = '*'">
+                            <input type="text" ng-model="day_of_month" name="day_of_month" class="day_of_month" style="border: 1px solid #ccc;width: 85px;text-align: center;margin-right:30px;" ng-init="day_of_month = '*'">
+                            <input type="text" ng-model="month" name="month" class="month" style="border: 1px solid #ccc;width: 85px;text-align: center;margin-right:30px;" ng-init="month = '*'">
+                            <input type="text" ng-model="day_of_week" name="day_of_week" class="day_of_week" style="border: 1px solid #ccc;width: 85px;text-align: center;" ng-init="day_of_week = '*'">
+							<input type="text" ng-model="year" name="year" class="year" style="border: 1px solid #ccc;width: 85px;text-align: center;" ng-init="year = '*'">
                         </p>
                         <p style="margin-top: -13px;font-weight: bold;">
+							<input type="text" style="width: 85px;text-align: center;margin-right:30px;" value="Seconds" readonly>
                             <input type="text" style="width: 85px;text-align: center;margin-right:30px;" value="Minute" readonly>
                             <input type="text" style="width: 85px;text-align: center;margin-right:30px;" value="Hour" readonly>
                             <input type="text" style="width: 85px;text-align: center;margin-right:30px;" value="Day of Month" readonly>
                             <input type="text" style="width: 85px;text-align: center;margin-right:30px;" value="Month" readonly>
                             <input type="text" style="width: 85px;text-align: center;" value="Day of Week">
+							<input type="text" style="width: 85px;text-align: center;" value="Year">
                         </p>
                         <p class="colorRed">{{ cron_job_err_msg }}</p>
                     </div>  
+					
                 </form>
               </div>
               <div class="modal-footer">
-                <button type="button" ng-click="close('cronjob_cancel')" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                <input type="submit" ng-click="close('cronjob_ok')" value="OK" class="btn btn-primary" />
+                <button type="button" ng-click="close('cronjob_cancel')" class="btn btn-default cleardata" data-dismiss="modal">Cancel</button>
+                <input type="submit" ng-click="close('cronjob_ok')" value="OK" class="btn btn-primary cleardata" />
               </div>
             </div>
+			</form>
           </div>
         </div>
     
         <div class="modal fade" ng-class="{true: 'fade1'}[edit_cronjob]">
           <div class="modal-dialog">
+			<form class="reset-form">
             <div class="modal-content">
               <div class="modal-header">
                 <button type="button" class="close" ng-click="close('edit_cronjob_cancel')" data-dismiss="modal" aria-hidden="true">&times;</button>
@@ -1180,21 +1204,25 @@
                         <input type="text" class="form-control" ng-model="jobCommand" name="jobCommand" placeholder="Enter Cron Job Command">
                         <p class="colorRed" ng-show="errCommand">Job Command must be filled</p>
                     </div>
-                    <div class="form-group" style='margin-bottom: -25px;'>
+                    <div class="form-group" style='margin-bottom: -25px; display:none;'>
                         <span class="headingLevel">Frequency</span>
                         <p>
-                            <input type="text" ng-model="minute" name="minute" style="border: 1px solid #ccc;width: 85px;text-align: center;margin-right:30px;" ng-init="minute = '*'">
-                            <input type="text" ng-model="hour" name="hour" style="border: 1px solid #ccc;width: 85px;text-align: center;margin-right:30px;" ng-init="hour = '*'">
-                            <input type="text" ng-model="day_of_month" name="day_of_month" style="border: 1px solid #ccc;width: 85px;text-align: center;margin-right:30px;" ng-init="day_of_month = '*'">
-                            <input type="text" ng-model="month" name="month" style="border: 1px solid #ccc;width: 85px;text-align: center;margin-right:30px;" ng-init="month = '*'">
-                            <input type="text" ng-model="day_of_week" name="day_of_week" style="border: 1px solid #ccc;width: 85px;text-align: center;" ng-init="day_of_week = '*'">
+							<input type="text" ng-model="seconds" name="seconds" class="seconds" style="border: 1px solid #ccc;width: 85px;text-align: center;margin-right:30px;" ng-init="seconds = '*'">
+                            <input type="text" ng-model="minute" name="minute" class="minute" style="border: 1px solid #ccc;width: 85px;text-align: center;margin-right:30px;" ng-init="minute = '*'">
+                            <input type="text" ng-model="hour" name="hour" class="hour" style="border: 1px solid #ccc;width: 85px;text-align: center;margin-right:30px;" ng-init="hour = '*'">
+                            <input type="text" ng-model="day_of_month" name="day_of_month" class="day_of_month" style="border: 1px solid #ccc;width: 85px;text-align: center;margin-right:30px;" ng-init="day_of_month = '*'">
+                            <input type="text" ng-model="month" name="month" class="month" style="border: 1px solid #ccc;width: 85px;text-align: center;margin-right:30px;" ng-init="month = '*'">
+                            <input type="text" ng-model="day_of_week" name="day_of_week" class="day_of_week" style="border: 1px solid #ccc;width: 85px;text-align: center;" ng-init="day_of_week = '*'">
+							<input type="text" ng-model="year" name="year" class="year" style="border: 1px solid #ccc;width: 85px;text-align: center;" ng-init="year = '*'">
                         </p>
                         <p style="margin-top: -13px;font-weight: bold;">
+							<input type="text" style="width: 85px;text-align: center;margin-right:30px;" value="Seconds" readonly>
                             <input type="text" style="width: 85px;text-align: center;margin-right:30px;" value="Minute" readonly>
                             <input type="text" style="width: 85px;text-align: center;margin-right:30px;" value="Hour" readonly>
                             <input type="text" style="width: 85px;text-align: center;margin-right:30px;" value="Day of Month" readonly>
                             <input type="text" style="width: 85px;text-align: center;margin-right:30px;" value="Month" readonly>
                             <input type="text" style="width: 85px;text-align: center;" value="Day of Week">
+							<input type="text" style="width: 85px;text-align: center;" value="Year">
                         </p>
                         <p class="colorRed">{{ cron_job_err_msg }}</p>
                     </div>  
@@ -1202,9 +1230,10 @@
               </div>
               <div class="modal-footer">
                 <button type="button" ng-click="close('edit_cronjob_cancel')" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                <input type="submit" ng-click="close('edit_cronjob_ok')" value="OK" class="btn btn-primary" />
+                <input type="submit" ng-click="close('edit_cronjob_ok')" value="OK" class="btn btn-primary cleardata" />
               </div>
             </div>
+			</form>
           </div>
         </div>
     
@@ -2351,9 +2380,10 @@
         </div>
         <div class="modal fade" ng-class="{true: 'fade1'}[patch_window]">
             <div class="modal-dialog" style="margin-top: 50px; width: 46%">
+			<form class="reset-form">
             <div class="modal-content">
               <div class="modal-header">
-                <button type="button" class="close" ng-click="close('patch_window_cancel')" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <button type="button" class="close cleardata" ng-click="close('patch_window_cancel')" data-dismiss="modal" aria-hidden="true">&times;</button>
                 <h2 class="modal-title">Add Patching</h2>
               </div>
               <div class="modal-body">
@@ -2365,25 +2395,41 @@
                         <p class="colorRed" ng-show="errSpace">Spaces between string is not allowed.</p>
                         <p class="colorRed" ng-show="errLetter">Patch Name Length must be between 3 and 128 characters.</p>
                     </div>
-                    <div class="form-group">
+					
+					<div class="form-group">
+						<div id="cronbuilder" class="cron-builder"></div>
+						<div>
+							<p><input type="text" readonly ng-model="cronvalue" class="cronresult" name="cronvalue" />
+							</p>
+						</div>
+					</div>
+					
+					
+                    <div class="form-group"  style="display:none;">
                         <span class="headingLevel">CRON/Rate expression*
                             <a><img data-placement="right" onmouseenter="$(this).tooltip('show')" title="{{cronInfo}}" style="width: 18px" src="images/info_icon.png"></a></span>
-                        <p>                        
-                            <input type="text" ng-model="minute" name="minute" style="border: 1px solid #ccc;width: 85px;text-align: center;margin-right:20px;" ng-init="minute = '*'">
-                            <input type="text" ng-model="hour" name="hour" style="border: 1px solid #ccc;width: 85px;text-align: center;margin-right:20px;" ng-init="hour = '*'">
-                            <input type="text" ng-model="day_of_month" name="day_of_month" style="border: 1px solid #ccc;width: 85px;text-align: center;margin-right:20px;" ng-init="day_of_month = '*'">
-                            <input type="text" ng-model="month" name="month" style="border: 1px solid #ccc;width: 85px;text-align: center;margin-right:20px;" ng-init="month = '*'">
-                            <input type="text" ng-model="day_of_week" name="day_of_week" style="border: 1px solid #ccc;width: 85px;text-align: center;" ng-init="day_of_week = '*'">
+                        <p>          
+							<input type="text" ng-model="seconds" name="seconds" class="seconds" style="border: 1px solid #ccc;width: 85px;text-align: center;margin-right:30px;" ng-init="seconds = '*'">
+                            <input type="text" ng-model="minute" name="minute" class="minute" style="border: 1px solid #ccc;width: 85px;text-align: center;margin-right:20px;" ng-init="minute = '*'">
+                            <input type="text" ng-model="hour" name="hour" class="hour" style="border: 1px solid #ccc;width: 85px;text-align: center;margin-right:20px;" ng-init="hour = '*'">
+                            <input type="text" ng-model="day_of_month" name="day_of_month" class="day_of_month" style="border: 1px solid #ccc;width: 85px;text-align: center;margin-right:20px;" ng-init="day_of_month = '*'">
+                            <input type="text" ng-model="month" name="month" class="month" style="border: 1px solid #ccc;width: 85px;text-align: center;margin-right:20px;" ng-init="month = '*'">
+                            <input type="text" ng-model="day_of_week" name="day_of_week" class="day_of_week" style="border: 1px solid #ccc;width: 85px;text-align: center;" ng-init="day_of_week = '*'">
+							<input type="text" ng-model="year" name="year" class="year" style="border: 1px solid #ccc;width: 85px;text-align: center;" ng-init="year = '*'">
                         </p>
                         <p style="margin-top: -13px;font-weight: bold;">
+							<input type="text" style="width: 85px;text-align: center;margin-right:30px;" value="Seconds" readonly>
                             <input type="text" style="width: 85px;text-align: center;margin-right:20px;" value="Minute" readonly>
                             <input type="text" style="width: 85px;text-align: center;margin-right:20px;" value="Hour" readonly>
                             <input type="text" style="width: 85px;text-align: center;margin-right:20px;" value="Day of Month" readonly>
                             <input type="text" style="width: 85px;text-align: center;margin-right:20px;" value="Month" readonly>
                             <input type="text" style="width: 85px;text-align: center;" value="Day of Week">
+							<input type="text" style="width: 85px;text-align: center;" value="Year">
                         </p>
                         <p class="colorRed" ng-show="errCron">CRON must be filled Correctly</p>
                     </div>
+					
+					
                      <div class="form-group">
                         <span class="headingLevel">Duration*
                             <a><img data-placement="right" onmouseenter="$(this).tooltip('show')" title="{{durationInfo}}" style="width: 18px" src="images/info_icon.png"></a></span>
@@ -2410,10 +2456,11 @@
                 </form>
               </div>
               <div class="modal-footer" style='border-top: none;margin-top: -20px;'>
-                <button type="button" ng-click="close('patch_window_cancel')" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                <input type="submit" ng-click="close('patch_window_ok')" value="OK" class="btn btn-primary" />
+                <button type="button" ng-click="close('patch_window_cancel')" class="btn btn-default cleardata" data-dismiss="modal">Cancel</button>
+                <input type="submit" ng-click="close('patch_window_ok')" value="OK" class="btn btn-primary cleardata" />
               </div>
             </div>
+			</form>
           </div>
         </div>
         <div class="modal fade" ng-class="{true: 'fade1'}[delete_patch]">
@@ -2512,6 +2559,31 @@
   <script type="text/javascript" src="controllers/projectInstanceController.js"></script>
   <script type="text/javascript" src="controllers/userTrailController.js"></script>
   <script type="text/javascript" src="controllers/searchServerController.js"></script>
+  <script type="text/javascript" src="js/jquery-cron-quartz.js"></script>
+	<script type="text/javascript">
+		$(function() {
+		   $(".cleardata").click(function() {			
+				$('.reset-form').trigger("reset");
+				$(".cron-period-select").trigger('change');
+				
+		   });
+		   $('.cron-builder').cronBuilder({
+			   //selectorLabel: "Select time period:  ",
+			   onChange: function(response) {
+				   $('.cronresult').val(response.expression);
+				   $('.seconds').val(response.sec_expression);
+				   $('.minute').val(response.min_expression);
+				   $('.hour').val(response.hour_expression);
+				   $('.day_of_month').val(response.dom_expression);
+				   $('.month').val(response.month_expression);
+				   $('.day_of_week').val(response.dow_expression);
+				   $('.year').val(response.year_expression);
+				   
+				   $('.seconds, .minute, .hour, .day_of_month, .month, .day_of_week, .year').trigger('change');
+			   }
+		   });   
+		});		
+	</script>
 
 </body>
 </html>

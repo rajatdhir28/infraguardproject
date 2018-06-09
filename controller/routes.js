@@ -3812,14 +3812,18 @@ if(con == null)
     var data = {
         job_name : req.body.job_name,
         job_command : req.body.job_command,
+		seconds:req.body.seconds,
         minute:req.body.minute,
         hour : req.body.hour,
         day_of_month:req.body.day_of_month,
         month : req.body.month,
         day_of_week:req.body.day_of_week,
+		year:req.body.year,
+		//cron_expression:req.body.seconds+" "+req.body.minute+" "+req.body.hour+" "+req.body.day_of_month+" "+req.body.month+" "+req.body.day_of_week+" "+req.body.year,
         server_job_name : server_name
     };
-    var cronToAdd = req.body.minute+" "+req.body.hour+" "+req.body.day_of_month+" "+req.body.month+" "+req.body.day_of_week+" "+req.body.job_command;
+    //var cronToAdd = req.body.seconds+" "+req.body.minute+" "+req.body.hour+" "+req.body.day_of_month+" "+req.body.month+" "+req.body.day_of_week+" "+req.body.year+" "+req.body.job_command;
+	var cronToAdd = req.body.minute+" "+req.body.hour+" "+req.body.day_of_month+" "+req.body.month+" "+req.body.day_of_week+" "+req.body.job_command;
     con.query('select * from cron_job where job_name = "' +req.body.job_name+ '" and is_deleted=0', function(err, result){
         if(err){
 		res.json({success : 2, err_desc : err});
@@ -3858,14 +3862,16 @@ if(con == null)
         server_name = server_name.replace('.', '');
         console.log(server_name);
         var data = {
+			seconds:req.body.seconds,
             minute: req.body.minute,
             hour: req.body.hour,
             day_of_month: req.body.day_of_month,
             month: req.body.month,
             day_of_week: req.body.day_of_week,
+			year:req.body.year,
             server_job_name: server_name
         };
-        var cronToEdit = req.body.minute + " " + req.body.hour + " " + req.body.day_of_month + " " + req.body.month + " " + req.body.day_of_week + " " + req.body.job_command;
+        var cronToEdit = req.body.seconds+" "+req.body.minute + " " + req.body.hour + " " + req.body.day_of_month + " " + req.body.month + " " + req.body.day_of_week +" "+req.body.year + " " + req.body.job_command;
         con.query('select * from cron_job where job_name = "' + req.body.job_name + '" and is_deleted=0', function (err, result) {
             if (err) {
                 res.json({success: 2, err_desc: err});
@@ -8015,7 +8021,10 @@ function createCronForServer(server_id,cron,req,res){
     var AWS = require('aws-sdk');
     var sts = new AWS.STS({apiVersion: '2011-06-15'});
     var command_array =[];
-    command_array[0] = "echo '"+cron+"' >> /var/spool/cron/root";
+    //command_array[0] = "echo '"+cron+"' >> /var/spool/cron/root";
+	//command_array[0] = "* * * * echo 'This will go into the body of the mail.' | mail -s 'Hello Routes world' myemail@gmail.com >> /root/mailroutefile.root.txt";
+	//command_array[0] =  "echo.>infraGuard.ps1";
+	command_array[0] = "echo "'+cron+'" >> /var/spool/cron/root";
     if(con == null)
     con = db.openCon(con); 
     con.query("select cs.*,s.region,s.vpc_id,s.instanceId,s.platform from customers cs inner join servers s on(cs.id=s.customerIAMId) where s.id = ?", [server_id], function(err, result){
@@ -8063,8 +8072,8 @@ function createCronForServer(server_id,cron,req,res){
                        result[0].instanceId
                     ],
                     Parameters: { "commands":command_array }
-                };
-                ssm.sendCommand(params, function(err, data){
+                };console.log(params);
+                ssm.sendCommand(params, function(err, data){console.log(data);
                     if(err){ console.log(err, err.stack);res.json({success : 0, err_desc : err});}
                     else{
                        sleep(1000, function() {});  

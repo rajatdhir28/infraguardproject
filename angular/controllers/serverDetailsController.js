@@ -836,11 +836,13 @@ var app = angular.module("serverDetailsController", []);
 		}else if (value == "cronjob_ok") {
                     var job_command = "";
                     var job_name = "";
+					var seconds = $rootScope.seconds;
                     var minute = $rootScope.minute;
                     var hour = $rootScope.hour;
                     var day_of_month = $rootScope.day_of_month;
                     var month = $rootScope.month;
                     var day_of_week = $rootScope.day_of_week;
+					var year = $rootScope.year;
                     var servers = [];
                         for (var x in $scope.servers){
                             servers[x] = $scope.servers[x].id;
@@ -865,12 +867,12 @@ var app = angular.module("serverDetailsController", []);
                         $http({
                             method: "POST",
                             url: "/createProjectCron",
-                            data: {job_name: job_name, job_command: job_command.trim(), minute: minute, hour: hour, day_of_month: day_of_month, month: month, day_of_week: day_of_week,servers:servers, projectId:id},
+                            data: {job_name: job_name, job_command: job_command.trim(), seconds: seconds, minute: minute, hour: hour, day_of_month: day_of_month, month: month, day_of_week: day_of_week, year: year,servers:servers, projectId:id},
                             headers: {"Content-Type": "application/json"}
                         }).success(function (data) {
                             $rootScope.modal_class ="";
                             if (data.success == 1) {
-                                var result_data = {job_name: job_name, job_command: job_command.trim(), id: data.row_id, minute: minute, hour: hour, day_of_month: day_of_month, month: month, day_of_week: day_of_week};
+                                var result_data = {job_name: job_name, job_command: job_command.trim(), id: data.row_id, seconds: seconds, minute: minute, hour: hour, day_of_month: day_of_month, month: month, day_of_week: day_of_week, year: year};
                                 $rootScope.CronJobs.push(result_data);
                                 alert("cron has been added successfully.");
                             } else if (data.success == 0) {
@@ -889,11 +891,13 @@ var app = angular.module("serverDetailsController", []);
 		}       else if (value == "edit_cronjob_ok") {
                         var job_command = $rootScope.jobCommand;
                         var job_name = $rootScope.jobName;
+						var seconds = $rootScope.seconds;
                         var minute = $rootScope.minute;
                         var hour = $rootScope.hour;
                         var day_of_month = $rootScope.day_of_month;
                         var month = $rootScope.month;
                         var day_of_week = $rootScope.day_of_week;
+						var year = $rootScope.year;
                         var oldCronDetails = $rootScope.oldCronDetails;
                         var servers = [];
                         for (var x in $scope.servers){
@@ -906,12 +910,12 @@ var app = angular.module("serverDetailsController", []);
                         $http({
                             method: "POST",
                             url: "/editProjectCron",
-                            data: {job_name: job_name, job_command: job_command.trim(), minute: minute, hour: hour, day_of_month: day_of_month, month: month, day_of_week: day_of_week, oldCronDetails: oldCronDetails, servers:servers, projectId:id},
+                            data: {job_name: job_name, job_command: job_command.trim(), seconds: seconds, minute: minute, hour: hour, day_of_month: day_of_month, month: month, day_of_week: day_of_week, year: year,oldCronDetails: oldCronDetails, servers:servers, projectId:id},
                             headers: {"Content-Type": "application/json"}
                         }).success(function (data) {
                             $rootScope.modal_class ="";
                             if (data.success == 1) {
-                                var result_data = {job_name: job_name, job_command: job_command.trim(), id: data.row_id, minute: minute, hour: hour, day_of_month: day_of_month, month: month, day_of_week: day_of_week};
+                                var result_data = {job_name: job_name, job_command: job_command.trim(), id: data.row_id, seconds: seconds, minute: minute, hour: hour, day_of_month: day_of_month, month: month, day_of_week: day_of_week, year: year};
                                 $rootScope.CronJobs.splice($rootScope.jobIndex, 1, result_data);
                                 alert("Cron has been edited successfully");
                             } else if (data.success == 0) {
@@ -1268,15 +1272,18 @@ var app = angular.module("serverDetailsController", []);
                                 $rootScope.modal_class = "";
                 }else if(value=="patch_window_ok"){
                     var patchName = $rootScope.patchName;
+					var seconds = $rootScope.seconds;
                     var minute = $rootScope.minute;
                     var hour = $rootScope.hour;
                     var day_of_month = $rootScope.day_of_month;
                     var month = $rootScope.month;
                     var day_of_week = $rootScope.day_of_week;
+					var year = $rootScope.year;
                     var duration = $rootScope.duration;
                     var cutOff = $rootScope.cutOff;
                     var operationType = $rootScope.operationType;
-                    var cron = "cron(" + minute + " " + hour + " " + day_of_month + " " + month + " " + day_of_week + ")";
+                    var cron = "cron(" + seconds + " " + minute + " " + hour + " " + day_of_month + " " + month + " " + day_of_week + " " + year + ")";
+					var cronexpression = $rootScope.cronvalue;
                    /* var testMinute = /(\*|[0-5]?[0-9]|\*\/[0-9]|[0-5]\,[0-5]?[0-9]|[0-5]?[0-9]\,[0-5]?[0-9]|[0-5]\-[0-5]?[0-9]|[0-5]?[0-9]\-[0-5]?[0-9]+)\s/;
                     var testHour = /(\*|1?[0-9]|2[0-3]|\*\/[0-9]|1?[0-9]\,1?[0-9]|1?[0-9]\,2[0-3]|2[0-3]\,2[0-3]|1?[0-9]\-1?[0-9]|1?[0-9]\-2[0-3]|2[0-3]\-2[0-3]+)\s/;
                     var testDayOfMonth = /(\*|\?|L|LW|[1-2]?[0-9]W|3[0-1]W|[1-2]?[0-9]|3[0-1]|\*\/[0-9]|[0-9]\,[1-2]?[0-9]|[0-9]\,3[0-1]|[1-2][0-9]\,[1-2][0-9]|[1-2][0-9]\,3[0-1]|3[0]\,3[1]|[0-9]\-[1-2]?[0-9]|[0-9]\-3[0-1]|[1-2][0-9]\-[1-2][0-9]|[1-2][0-9]\-3[0-1]|3[0]\-3[1]+)\s/;
