@@ -3819,7 +3819,7 @@ if(con == null)
         month : req.body.month,
         day_of_week:req.body.day_of_week,
 		year:req.body.year,
-		//cron_expression:req.body.seconds+" "+req.body.minute+" "+req.body.hour+" "+req.body.day_of_month+" "+req.body.month+" "+req.body.day_of_week+" "+req.body.year,
+		cron_expression:req.body.minute+" "+req.body.hour+" "+req.body.day_of_month+" "+req.body.month+" "+req.body.day_of_week,
         server_job_name : server_name
     };
     //var cronToAdd = req.body.seconds+" "+req.body.minute+" "+req.body.hour+" "+req.body.day_of_month+" "+req.body.month+" "+req.body.day_of_week+" "+req.body.year+" "+req.body.job_command;
@@ -3869,9 +3869,11 @@ if(con == null)
             month: req.body.month,
             day_of_week: req.body.day_of_week,
 			year:req.body.year,
+			cron_expression:req.body.minute+" "+req.body.hour+" "+req.body.day_of_month+" "+req.body.month+" "+req.body.day_of_week,
             server_job_name: server_name
         };
-        var cronToEdit = req.body.seconds+" "+req.body.minute + " " + req.body.hour + " " + req.body.day_of_month + " " + req.body.month + " " + req.body.day_of_week +" "+req.body.year + " " + req.body.job_command;
+        //var cronToEdit = req.body.seconds+" "+req.body.minute + " " + req.body.hour + " " + req.body.day_of_month + " " + req.body.month + " " + req.body.day_of_week +" "+req.body.year + " " + req.body.job_command;
+		var cronToEdit = req.body.minute+" "+req.body.hour+" "+req.body.day_of_month+" "+req.body.month+" "+req.body.day_of_week+" "+req.body.job_command;
         con.query('select * from cron_job where job_name = "' + req.body.job_name + '" and is_deleted=0', function (err, result) {
             if (err) {
                 res.json({success: 2, err_desc: err});
@@ -7911,6 +7913,7 @@ ec2.createTags(params, function(err, data){
                                     duration:req.body.duration,
                                     cutoff:req.body.cutOff,
                                     operation_type:req.body.operationType,
+									cron_expression:req.body.cronexpression,
                                 }
                                 con.query("insert into patching_log set ?", [obj], function(err, result){
                                 if(err){
@@ -8022,9 +8025,8 @@ function createCronForServer(server_id,cron,req,res){
     var sts = new AWS.STS({apiVersion: '2011-06-15'});
     var command_array =[];
     //command_array[0] = "echo '"+cron+"' >> /var/spool/cron/root";
-	//command_array[0] = "* * * * echo 'This will go into the body of the mail.' | mail -s 'Hello Routes world' myemail@gmail.com >> /root/mailroutefile.root.txt";
-	//command_array[0] =  "echo.>infraGuard.ps1";
-	command_array[0] = "echo "'+cron+'" >> /var/spool/cron/root";
+	//command_array[0] = "* * * * echo 'This will go into the body of the mail.' | mail -s 'Hello Routes world' myemail@gmail.com >> /root/mailroutefile.root.txt";	/
+	command_array[0] = "echo " + cron + " >> /var/spool/cron/root";
     if(con == null)
     con = db.openCon(con); 
     con.query("select cs.*,s.region,s.vpc_id,s.instanceId,s.platform from customers cs inner join servers s on(cs.id=s.customerIAMId) where s.id = ?", [server_id], function(err, result){

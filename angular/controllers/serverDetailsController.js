@@ -1282,8 +1282,9 @@ var app = angular.module("serverDetailsController", []);
                     var duration = $rootScope.duration;
                     var cutOff = $rootScope.cutOff;
                     var operationType = $rootScope.operationType;
-                    var cron = "cron(" + seconds + " " + minute + " " + hour + " " + day_of_month + " " + month + " " + day_of_week + " " + year + ")";
-					var cronexpression = $rootScope.cronvalue;
+					var cron = "cron(" + $rootScope.minute+" "+$rootScope.hour+" "+$rootScope.day_of_month+" "+$rootScope.month+ " ?)";
+                    //var cron = "cron(" + $rootScope.cronvalue + ")",
+					var cronexpression = $rootScope.minute+" "+$rootScope.hour+" "+$rootScope.day_of_month+" "+$rootScope.month+" ?";
                    /* var testMinute = /(\*|[0-5]?[0-9]|\*\/[0-9]|[0-5]\,[0-5]?[0-9]|[0-5]?[0-9]\,[0-5]?[0-9]|[0-5]\-[0-5]?[0-9]|[0-5]?[0-9]\-[0-5]?[0-9]+)\s/;
                     var testHour = /(\*|1?[0-9]|2[0-3]|\*\/[0-9]|1?[0-9]\,1?[0-9]|1?[0-9]\,2[0-3]|2[0-3]\,2[0-3]|1?[0-9]\-1?[0-9]|1?[0-9]\-2[0-3]|2[0-3]\-2[0-3]+)\s/;
                     var testDayOfMonth = /(\*|\?|L|LW|[1-2]?[0-9]W|3[0-1]W|[1-2]?[0-9]|3[0-1]|\*\/[0-9]|[0-9]\,[1-2]?[0-9]|[0-9]\,3[0-1]|[1-2][0-9]\,[1-2][0-9]|[1-2][0-9]\,3[0-1]|3[0]\,3[1]|[0-9]\-[1-2]?[0-9]|[0-9]\-3[0-1]|[1-2][0-9]\-[1-2][0-9]|[1-2][0-9]\-3[0-1]|3[0]\-3[1]+)\s/;
@@ -1350,7 +1351,7 @@ var app = angular.module("serverDetailsController", []);
                         $http({
                              method: "post",
                              url: "/createPatchMW",
-                             data: {serverId:$rootScope.serverId,patchName:patchName,cron:cron,duration:duration,cutOff:cutOff,operationType:operationType },
+                             data: {serverId:$rootScope.serverId,patchName:patchName,cron:cron,duration:duration,cutOff:cutOff,operationType:operationType, cronexpression:cronexpression },
                                      headers: {"Content-Type": "application/json"}
                         })
                         .success(function (data){
